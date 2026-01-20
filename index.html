@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Op12 Bingo Party ✨</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Header with controls on the same line -->
+<header class="top-header">
+  <div class="giant-title" id="boardTitleDisplay" contenteditable="true" spellcheck="false" data-placeholder="BINGO NAME HERE">BINGO NAME HERE</div>
+
+  <div class="header-controls">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <span class="active">☀️</span>
+      <span>🌙</span>
+    </div>
+    <div class="gear-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></div>
+  </div>
+</header>
+
+<!-- Settings panel -->
+<div class="settings-panel" id="settingsPanel">
+  <h3>Customize Bingo</h3>
+
+  <label>Cell Text Size</label>
+  <select id="textSize">
+    <option value="0.9">Small</option>
+    <option value="1.15" selected>Normal</option>
+    <option value="1.4">Large</option>
+    <option value="1.8">Huge</option>
+  </select>
+
+  <label>Accent Color</label>
+  <input type="color" id="accentColor" value="#00d4ff">
+
+  <label>Marked Color</label>
+  <input type="color" id="markedColor" value="#00ff9d">
+
+  <label>Free Space Color</label>
+  <input type="color" id="freeColor" value="#ff2e82">
+
+  <div class="theme-presets">
+    <button class="theme-btn" onclick="setThemePreset('carbon-dark')">Carbon Dark</button>
+    <button class="theme-btn" onclick="setThemePreset('light-clean')">Light Clean</button>
+    <button class="theme-btn" onclick="setThemePreset('neon-glow')">Neon Glow</button>
+    <button class="theme-btn" onclick="setThemePreset('purple-haze')">Purple Haze</button>
+  </div>
+
+  <button onclick="applySettings()">Apply Custom Colors</button>
+</div>
+
+<!-- Word List Modal -->
+<div id="wordListModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle">Word Lists</h2>
+      <span class="close-btn" onclick="closeWordListModal()">&times;</span>
+    </div>
+    <div id="savedListsContainer" class="saved-lists"></div>
+    <div class="modal-footer">
+      <button onclick="exportAllWordLists()">
+        <i class="fas fa-download"></i> Export All Lists
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="controls">
+    <div class="grid-three">
+      <div>
+        <label>Size</label>
+        <div class="custom-select" id="sizeSelect" data-value="5">
+          <div class="selected"><span>5×5 Epic</span><i class="fas fa-chevron-down arrow"></i></div>
+          <div class="options">
+            <div class="option" data-value="3">3×3 Mini</div>
+            <div class="option" data-value="4">4×4 Classic</div>
+            <div class="option" data-value="5">5×5 Epic</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <label>Free Space</label>
+        <div class="custom-select" id="freeSelect" data-value="yes">
+          <div class="selected"><span>Yes (center)</span><i class="fas fa-chevron-down arrow"></i></div>
+          <div class="options">
+            <div class="option" data-value="yes">Yes (center)</div>
+            <div class="option" data-value="no">No</div>
+          </div>
+        </div>
+      </div>
+	  <div>
+	    <label>Win Condition</label>
+		<div class="custom-select" id="winConditionSelect" data-value="standard">
+		  <div class="selected"><span>Standard (Lines)</span><i class="fas fa-chevron-down arrow"></i></div>
+		  <div class="options">
+		    <div class="option" data-value="standard">Standard (Lines)</div>
+		    <div class="option" data-value="blackout">Blackout (All)</div>
+			<div class="option" data-value="battle">Battle Mode (Shields)</div>
+		    <div class="option" data-value="corners">Four Corners</div>
+		    <div class="option" data-value="x-pattern">X Pattern</div>
+		    <div class="option" data-value="plus-pattern">+ Pattern</div>
+		  </div>
+		</div>
+	  </div>
+    </div>
+
+    <label class="section-label collapsible-header" onclick="toggleItemsSection()">
+	  <span>Your Items</span>
+	  <i class="fas fa-chevron-down collapse-arrow"></i>
+	</label>
+	<div id="itemsSection" class="collapsible-content collapsed">
+	  <p class="hint">Press Enter to add • Click bubble to edit/delete</p>
+
+	  <input type="text" id="itemInput" placeholder="Type item here and press Enter...">
+
+	  <p class="counter" id="itemCounter">0/25 items</p>
+
+	  <div class="items-container" id="itemsList"></div>
+
+	  <div class="save-load">
+		<button onclick="saveWordList()"><i class="fas fa-save"></i> Save List</button>
+		<button onclick="showWordListManager('load')"><i class="fas fa-folder-open"></i> Load List</button>
+		<button onclick="showWordListManager('add')"><i class="fas fa-plus"></i> Add from List</button>
+		<button class="clear" onclick="clearList()"><i class="fas fa-trash"></i> Clear</button>
+	  </div>
+	</div>
+
+	<div class="center">
+	  <button class="generate-btn" onclick="generateBingo()">GENERATE BINGO BOARD</button>
+	  <button class="clear" onclick="deleteBoard()" style="margin-top: 1rem;">
+		<i class="fas fa-trash"></i> Delete Board
+	  </button>
+	</div>
+  </div>
+  
+  <label class="section-label collapsible-header" onclick="togglePenaltySection()">
+        <span>Penalty Items</span>
+        <i class="fas fa-chevron-down penalty-collapse-arrow"></i>
+      </label>
+      <div id="penaltySection" class="collapsible-content collapsed">
+        <p class="hint">Define actions that hinder your progress.</p>
+        
+        <div class="penalty-input-group">
+          <input type="text" id="penaltyInput" placeholder="Penalty Name (e.g. Technical Foul)">
+			<div class="custom-select" id="penaltyTypeSelect" data-value="random">
+			  <div class="selected"><span>Remove Random</span><i class="fas fa-chevron-down arrow"></i></div>
+			  <div class="options">
+				<div class="option" data-value="random">Remove Random</div>
+				<div class="option" data-value="clear">Total Clear</div>
+				</div>
+			</div>
+          <button onclick="addPenaltyItem()"><i class="fas fa-plus"></i></button>
+        </div>
+
+        <div class="items-container" id="penaltyList"></div>
+      </div>
+
+<div class="bingo-board">
+    <h2 id="bingoTitle" class="bingo-title"></h2>
+    <table id="bingoTable"></table>
+    
+    <div class="penalty-divider"></div>
+    <div id="penaltyButtons" class="penalty-btn-container"></div>
+    
+    <div id="commandList" class="command-list"></div>
+  </div>
+</div>
+<canvas id="confetti-canvas"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
